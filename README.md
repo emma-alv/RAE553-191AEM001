@@ -9,23 +9,23 @@ To get quantified with an operation of FTP protocol using Python library ftplib.
 
 * To ensure that we are working in a safe way, that means in an environment that we can manipulate and don't have to worry if we broke it down, let's create a new environment in anaconda. A virtual environment is a tool that helps to keep dependencies required by different projects separate by creating isolated spaces for them that contain per-project dependencies for them.
 
-> `$ conda create -n 191AEM001_env`
+`$ conda create -n 191AEM001_env`
 
 ---
 ### Login to the FTP server
 
 * To establish the connection with the FTP server using python code is necessary import the library `ftplib`
 
-> `>>> from ftplib import FTP`
+`>>> from ftplib import FTP`
 
 * As the client side, we should define the FTP server to connect, as was mentioned before the server is `ftp.lt.debian.org`
 
-> `>>> link = 'ftp.lt.debian.org'`
-> `>>> ftp = FTP(link)`
-> `>>> ftp.login()`
+`>>> link = 'ftp.lt.debian.org'`
+`>>> ftp = FTP(link)`
+`>>> ftp.login()`
 
 * If the login is successful into the FTP server we will see a success message
-> `'230 Login successful.'`
+`'230 Login successful.'`
 
 ---
 ### Workaround FTP
@@ -34,7 +34,7 @@ To get quantified with an operation of FTP protocol using Python library ftplib.
 
 * The first command will show us a list of current files and directories in the root directory where we are connected
 
-> `>>> data = ftp.retrlines('LIST')`
+`>>> data = ftp.retrlines('LIST')`
 
 **Output**
 ```
@@ -53,10 +53,10 @@ drwxr-xr-x    7 ftp      ftp          4096 Sep 10 17:17 ubuntu
 
 * Also we can change the directory where we are working
 
-> `>>> ftp.cwd('debian')`
+`>>> ftp.cwd('debian')`
 
 **Output**
-> `'250 Directory succesfully changed.'`
+`'250 Directory succesfully changed.'`
 
 ---
 ### Downloading files from FTP
@@ -67,15 +67,15 @@ drwxr-xr-x    7 ftp      ftp          4096 Sep 10 17:17 ubuntu
 
 * Before download the file we should defined the path and file name where this file is going to be downloaded.
 
-> `>>> out = '/home/user/README.html'`
+`>>> out = '/home/user/README.html'`
 
 * With the function `open()` we will read the file from the FTP and save it in the path defined before.
 
-> `>>> with open(out, 'wb') as f:`
-> `...    ftp.retrbinary('RETR ' + 'README.html', f.write)`
+`>>> with open(out, 'wb') as f:`
+`...    ftp.retrbinary('RETR ' + 'README.html', f.write)`
 
 **Output**
-> `'226 Transfer complete.'`
+`'226 Transfer complete.'`
 
 ---
 #Upload files to FTP
@@ -84,8 +84,8 @@ drwxr-xr-x    7 ftp      ftp          4096 Sep 10 17:17 ubuntu
 
 * To do this, we will edit the previous `README.html` file deleting all html tags and leaving it as simple txt file. To do so I used a simple awk script.
 
-> `$ awk '{gsub(/<[^>]*>/,""); print }' ./README.html > README2.txt`
+`$ awk '{gsub(/<[^>]*>/,""); print }' ./README.html > README2.txt`
 
 * To upload the file we are going to use the function `open()` again.
-> `>>> file_name='README2.txt'`
-> `>>> ftp.storbinary('STOR ' + file_name, open(file_name, rb))`
+`>>> file_name='README2.txt'`
+`>>> ftp.storbinary('STOR ' + file_name, open(file_name, rb))`
