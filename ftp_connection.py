@@ -1,6 +1,6 @@
 from ftplib import FTP
 
-ftp = ('ftp.lt.debian.org')
+ftp = FTP('ftp.lt.debian.org')
 ftp.login()
 
 data = ftp.retrlines('LIST')
