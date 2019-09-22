@@ -20,9 +20,11 @@ To get quantified with an operation of FTP protocol using Python library ftplib.
 
 * As the client side, we should define the FTP server to connect, as was mentioned before the server is `ftp.lt.debian.org`
 
-`>>> link = 'ftp.lt.debian.org'`
-`>>> ftp = FTP(link)`
-`>>> ftp.login()`
+```
+>>> link = 'ftp.lt.debian.org'
+>>> ftp = FTP(link)
+>>> ftp.login()
+```
 
 * If the login is successful into the FTP server we will see a success message
 `'230 Login successful.'`
@@ -71,14 +73,16 @@ drwxr-xr-x    7 ftp      ftp          4096 Sep 10 17:17 ubuntu
 
 * With the function `open()` we will read the file from the FTP and save it in the path defined before.
 
-`>>> with open(out, 'wb') as f:`
-`...    ftp.retrbinary('RETR ' + 'README.html', f.write)`
+```
+>>> with open(out, 'wb') as f:
+...    ftp.retrbinary('RETR ' + 'README.html', f.write)
+```
 
 **Output**
 `'226 Transfer complete.'`
 
 ---
-#Upload files to FTP
+# Upload files to FTP
 
 * Our last task was to download a file, but what if we want to upload a file.
 
@@ -87,5 +91,13 @@ drwxr-xr-x    7 ftp      ftp          4096 Sep 10 17:17 ubuntu
 `$ awk '{gsub(/<[^>]*>/,""); print }' ./README.html > README2.txt`
 
 * To upload the file we are going to use the function `open()` again.
-`>>> file_name='README2.txt'`
-`>>> ftp.storbinary('STOR ' + file_name, open(file_name, rb))`
+```
+>>> file_name='README2.txt'
+>>> ftp.storbinary('STOR ' + file_name, open(file_name, rb))
+```
+---
+# FTP server
+
+* Besides to work as FTP client, also we can start our own FTP server using Python and the library `pyftpdlib`.
+
+The python script to enable the ftp server you can follow in the file `ftpserver.py`
