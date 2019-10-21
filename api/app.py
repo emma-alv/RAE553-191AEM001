@@ -20,4 +20,6 @@ class Item(Resource):
 
 api.add_resource(Catalog, '/catalog') #http://127.0.0.1:5000/catalog/
 api.add_resource(Item, '/item/<string:item_name>')
-app.run(host = '0.0.0.0', port=5000)
+
+if __name__ == '__main__':
+    app.run(host = '0.0.0.0', port=5000)
