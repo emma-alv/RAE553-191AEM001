@@ -1,14 +1,21 @@
-
 from flask import Flask
 from flask_restful import Resource, Api
+
+Catalog = {}
 
 app = Flask(__name__)
 api = Api(app)
 
-class Student(Resource):
-    def get(self, name):
-        return {'student': name}
+class Catalog(Resource):
+    def get(self):
+        return Catalog
 
-api.add_resource(Student, '/student/<string:name>')
+class Item(Resource):
+    def get(self, item_name):
+        return Catalog[item_name]
+    def post(selg, item_name):
+        Catalog[item_name] = {'price': ''}
 
-app.run(host='0.0.0.0', port=8080)
+api.add_resource(Catalog, '/catalog') #http://127.0.0.1:5000/catalog/
+api.add_resource(Item, 'item/<string:item_name')
+app.run(port=5000)
