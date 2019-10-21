@@ -17,5 +17,5 @@ class Item(Resource):
         Catalog[item_name] = {'price': ''}
 
 api.add_resource(Catalog, '/catalog') #http://127.0.0.1:5000/catalog/
-api.add_resource(Item, '/item/<string:item_name')
+api.add_resource(Item, '/item/<string:item_name>')
 app.run(port=5000)
