@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api
+import json
 
 Catalog = {}
 
@@ -8,7 +9,8 @@ api = Api(app)
 
 class Catalog(Resource):
     def get(self):
-        return Catalog
+        app_json = json.dumps(Catalog)
+        return app_json
 
 class Item(Resource):
     def get(self, item_name):
