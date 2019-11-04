@@ -20,13 +20,6 @@ def customized_error_handler(error):
                     'code'      : error.status_code
                     }), error.status_code
 
-def abort_if_item_doesnt_exist(item_name):
-    if item_name not in items:
-        return jsonify({
-                        'code': 404,
-                        'message': 'Item {} not in the catalog'.format(item_name)
-                        }), 404
-
 @app.route('/items', methods=['GET'])
 @jwt_required()
 def Items():
@@ -77,12 +70,6 @@ def Item():
                         'code': 201,
                         'message': "Item {} succesfull deleted".format(item_name)
                         }), 201
-
-
-
-#api.add_resource(Items, '/items') 
-#api.add_resource(Item, '/item/<string:item_name>')
-#api.add_resource(Auth, '/auth')
 
 if __name__ == '__main__':
     app.run(port=5000)
