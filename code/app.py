@@ -39,8 +39,17 @@ def Item():
         else:
             id = len(items.keys()) + 1
         parser = reqparse.RequestParser()
-        parser.add_argument("price")
+        parser.add_argument("price",
+                #type = float,
+                #required = True,
+                help = "This field cannot be left blank!"
+                )
         args = parser.parse_args()
+        if not args.price:
+            return jsonify({
+                        'code': 400,
+                        'message': "'price' field cannot be left blank!"
+                        }), 400  
         items[item_name] = {"id": id, "price": args["price"]}
         return jsonify({
                         'code': 201,
