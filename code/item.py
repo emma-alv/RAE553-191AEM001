@@ -1,6 +1,18 @@
-from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_restful import Resource
 import sqlite3
+
+class List_Items(Resource):
+    TABLE_NAME = 'items'
+    def get_items(self):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+        query = "SELECT * FROM {table}".format(table=self.TABLE_NAME)
+        result = cursor.execute(query)
+        row = cursor.fetchall()
+        catalog = {}
+        for item in row:
+            catalog[item[0]] = {"name": item[0], "price": item[1]}
+        return catalog 
 
 class Sinlge_Item(Resource):
     TABLE_NAME = 'items'
@@ -9,12 +21,6 @@ class Sinlge_Item(Resource):
         item = self.find_by_name(item_name)
         if item:
             return item
-        else:
-            not_item = {
-                        'code': 404,
-                        'message': 'Item {} not in the catalog'.format(item_name)
-                        }, 404
-            return not_item, 404
 
     def put_item(self, item_name, price):
         item = self.find_by_name(item_name)
@@ -22,10 +28,10 @@ class Sinlge_Item(Resource):
         cursor = connection.cursor()
         if item:
             query = "UPDATE {table} SET price=? WHERE name=?".format(table=self.TABLE_NAME)
-            result = cursor.execute(query, (price, item_name, ))
+            cursor.execute(query, (price, item_name, ))
         else:
             query = "INSERT INTO {table} VALUES (?, ?)".format(table=self.TABLE_NAME)
-            result = cursor.execute(query, (item_name, price, ))
+            cursor.execute(query, (item_name, price, ))
         connection.commit()
         connection.close()
         item = self.find_by_name(item_name)
@@ -33,20 +39,27 @@ class Sinlge_Item(Resource):
     
     def post_item(self, item_name, price):
         item = self.find_by_name(item_name)
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
         if item:
+            connection = sqlite3.connect('data.db')
+            cursor = connection.cursor()
             query = "UPDATE {table} SET price=? WHERE name=?".format(table=self.TABLE_NAME)
-            result = cursor.execute(query, (price, item_name, ))         
+            cursor.execute(query, (price, item_name, ))         
+            item = self.find_by_name(item_name)
+            connection.commit()
+            connection.close()
             item = self.find_by_name(item_name)
             return item
-        else:
-            not_item = [{
-                        'code': 404,
-                        'message': 'Item {} not in the catalog'.format(item_name)
-                        }, 404]
-            return not_item
 
+    def delete_item(self, item_name):
+        item = self.find_by_name(item_name)
+        if item:
+            connection = sqlite3.connect('data.db')
+            cursor = connection.cursor()
+            query = "DELETE FROM {table} WHERE name=?".format(table=self.TABLE_NAME)
+            cursor.execute(query, (item_name,))
+            connection.commit()
+            connection.close()
+            return {"message": "Item deleted"}
 
     @classmethod
     def find_by_name(cls, item_name):
