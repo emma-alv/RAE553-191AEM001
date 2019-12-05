@@ -2,6 +2,8 @@ from flask import Flask, jsonify
 from flask_restful import Resource, Api, abort, reqparse, request
 from flask_jwt import JWT, jwt_required, current_identity
 from security import authenticate, identity
+from user import UserRegister
+from item import Sinlge_Item
 
 app = Flask(__name__)
 api = Api(app)
@@ -32,53 +34,51 @@ def Items():
 @app.route('/item', methods=['GET','PUT','POST','DELETE'])
 @jwt_required()
 def Item():
+    item = Sinlge_Item()
     item_name = request.args.get('item_name')
+    parser = reqparse.RequestParser()
+    parser.add_argument("price")
+    args = parser.parse_args()
     if request.method == 'PUT':
-        if item_name in items.keys():
-            id = items[item_name]['id']
-        else:
-            id = len(items.keys()) + 1
-        parser = reqparse.RequestParser()
-        parser.add_argument("price",
-                #type = float,
-                #required = True,
-                help = "This field cannot be left blank!"
-                )
-        args = parser.parse_args()
-        if not args.price:
-            return jsonify({
-                        'code': 400,
-                        'message': "'price' field cannot be left blank!"
-                        }), 400  
-        items[item_name] = {"id": id, "price": args["price"]}
-        return jsonify({
-                        'code': 201,
-                        'message': "Item {} succesfull updated".format(item_name)
-                        }), 201
-    if item_name not in items:
-        return jsonify({
-                        'code': 404,
-                        'message': 'Item {} not in the catalog'.format(item_name)
-                        }), 404    
+        item_requested = item.put_item(item_name, args["price"])
+        return item_requested   
     if request.method == 'GET':
-        return jsonify({
-            item_name: items[item_name]
-            }), 201
+        item_requested = item.get_item(item_name)
+        # if item_requested:
+        #     return item_requested
+        return item_requested
     if request.method == 'POST':
         parser = reqparse.RequestParser()
         parser.add_argument("price")
         args = parser.parse_args()
-        items[item_name]["price"] = args["price"]
-        return jsonify({
-                        'code': 201,
-                        'message': "Item {} succesfull updated".format(item_name)
-                        }), 201
+        item_requested = item.post_item(item_name, price)
+        return jsonify(item_requested)
     if request.method == 'DELETE':
         items.pop(item_name)
         return jsonify({
                         'code': 201,
                         'message': "Item {} succesfull deleted".format(item_name)
                         }), 201
+
+@app.route('/signin', methods=['POST'])
+def Sigin():
+    if request.method == 'POST':
+        parser = reqparse.RequestParser()
+        parser.add_argument("username",
+            type=str,
+            required=True,
+            help="This field cannot be blank"
+        )
+        parser.add_argument("password",
+            type=str,
+            required=True,
+            help="This field cannot be blank"
+        )
+        data = parser.parse_args()
+        create_user = UserRegister.new_user(data["username"], data["password"])
+        return jsonify({
+            "message": create_user
+            }), 201
 
 if __name__ == '__main__':
     app.run(port=5000)
