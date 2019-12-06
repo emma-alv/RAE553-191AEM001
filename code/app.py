@@ -4,10 +4,13 @@ from flask_jwt import JWT, jwt_required, current_identity
 from security import authenticate, identity
 from user import UserRegister
 from item import Sinlge_Item, List_Items
-
+# Application instance
 app = Flask(__name__)
 api = Api(app)
+
+# JWT Secret Key used to sign the token
 app.config['SECRET_KEY'] = 'fS%JG@Pe8^4fYDMV'
+# JWT authentication URL where a user should request to login
 app.config['JWT_AUTH_URL_RULE'] = '/login'
 jwt = JWT(app, authenticate, identity)
 
@@ -24,6 +27,7 @@ def error_item_not_found(item_name):
             'message': 'Item {} not in the catalog'.format(item_name)
             })
 
+# App route to get the list of all items inside the calatog
 @app.route('/items', methods=['GET'])
 @jwt_required()
 def Items():
@@ -36,7 +40,7 @@ def Items():
             "message": "Empty Catalog"
         }), 404
 
-
+#App route to request a specific item
 @app.route('/item', methods=['GET','PUT','POST','DELETE'])
 @jwt_required()
 def Item():
@@ -46,28 +50,33 @@ def Item():
     parser.add_argument("price")
     args = parser.parse_args()
     
+    # PUT Request
     if request.method == 'PUT':
         item_requested = item.put_item(item_name, args["price"])
         return item_requested, 201   
     
+    #GET Request
     if request.method == 'GET':
         item_requested = item.get_item(item_name)
         if item_requested:
             return item_requested, 201
         return error_item_not_found(item_name), 404
     
+    #POST Request
     if request.method == 'POST':
         item_requested = item.post_item(item_name, args["price"])
         if item_requested:
             return item_requested, 201
         return error_item_not_found(item_name), 404
     
+    #DELETE Request
     if request.method == 'DELETE':
         item_requested = item.delete_item(item_name)
         if item_requested:
             return item_requested, 201
         return error_item_not_found(item_name), 404
 
+# App route to create a new user
 @app.route('/signin', methods=['POST'])
 def Sigin():
     if request.method == 'POST':
@@ -84,9 +93,13 @@ def Sigin():
         )
         data = parser.parse_args()
         create_user = UserRegister.new_user(data["username"], data["password"])
+        if create_user:
+            return jsonify({
+                "message": create_user
+                }), 201
         return jsonify({
-            "message": create_user
-            }), 201
+                "message": "User already exist"
+                }), 400
 
 if __name__ == '__main__':
     app.run(port=5000)

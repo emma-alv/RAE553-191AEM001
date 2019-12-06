@@ -47,7 +47,7 @@ class UserRegister(object):
     @classmethod
     def new_user(cls, username, password):
         if User.find_by_username(username):
-            return "A user with this username already exists"
+            return None
 
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
